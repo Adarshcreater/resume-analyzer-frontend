@@ -5,19 +5,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Resume Analyzer</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            poppins: ['Poppins', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            },
+            gradient: {
+              start: '#4f46e5',
+              end: '#06b6d4',
+            }
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    .gradient-text {
+      background: linear-gradient(90deg, #4f46e5, #06b6d4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    }
+    .file-input::file-selector-button {
+      background-color: #e0f2fe;
+      border: 1px solid #bae6fd;
+      border-radius: 0.25rem;
+      padding: 0.5rem 1rem;
+      margin-right: 1rem;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.2s;
+    }
+    .file-input::file-selector-button:hover {
+      background-color: #bae6fd;
+    }
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center px-4">
-  <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-xl">
-    <h1 class="text-2xl font-bold text-center mb-6 text-blue-600">AI Resume Analyzer</h1>
-    <form id="resumeForm" class="space-y-4">
-      <div>
-        <label class="block text-gray-700">Upload Resume (PDF):</label>
-        <input type="file" id="resume" accept=".pdf" required class="mt-1 p-2 w-full border rounded" />
+<body class="bg-gradient-to-br from-primary-50 to-primary-100 min-h-screen flex flex-col items-center justify-center px-4 font-poppins">
+  <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl border border-primary-100 transform transition-all hover:scale-[1.01]">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold gradient-text mb-2">AI Resume Analyzer</h1>
+      <p class="text-primary-600">Upload your resume and discover how well it matches your dream job</p>
+    </div>
+    
+    <form id="resumeForm" class="space-y-6">
+      <div class="space-y-2">
+        <label class="block text-primary-700 font-medium">Upload Resume (PDF)</label>
+        <div class="relative">
+          <input type="file" id="resume" accept=".pdf" required 
+                 class="file-input mt-1 p-4 w-full border-2 border-dashed border-primary-200 rounded-xl hover:border-primary-300 transition-colors cursor-pointer" />
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span class="text-primary-400" id="file-label">Click to upload or drag and drop</span>
+          </div>
+        </div>
       </div>
-      <div>
-        <label class="block text-gray-700">Select Job Role:</label>
-        <select id="jobRole" required class="mt-1 p-2 w-full border rounded">
-          <option value="">-- Choose Role --</option>
+      
+      <div class="space-y-2">
+        <label class="block text-primary-700 font-medium">Select Job Role</label>
+        <select id="jobRole" required 
+                class="mt-1 p-3 w-full border-2 border-primary-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+          <option value="">-- Choose Your Dream Role --</option>
           <option>Data Analyst</option>
           <option>Software Engineer</option>
           <option>AI Engineer</option>
@@ -28,50 +101,110 @@
           <option>DevOps Engineer</option>
           <option>Database Admin</option>
           <option>Cybersecurity Analyst</option>
-          <!-- Add more roles as needed -->
         </select>
       </div>
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Analyze</button>
+      
+      <button type="submit" 
+              class="gradient-bg text-white px-6 py-3 rounded-xl hover:opacity-90 w-full font-semibold text-lg shadow-lg transform transition-all hover:scale-[1.02] pulse-animation">
+        Analyze My Resume
+      </button>
     </form>
 
-    <div id="result" class="mt-6 text-center hidden">
-      <h2 class="text-xl font-semibold mb-2 text-green-600">Analysis Result</h2>
-      <p id="matchPercent" class="text-lg"></p>
-      <p id="keywordsMatched" class="text-sm text-gray-600 mt-2"></p>
+    <div id="result" class="mt-8 p-6 rounded-xl bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200 hidden">
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-primary-800 mb-3">Analysis Result</h2>
+        <div class="inline-block bg-white rounded-full p-2 shadow-md mb-4">
+          <div id="circularProgress" class="w-24 h-24 rounded-full flex items-center justify-center" style="background: conic-gradient(#4f46e5 var(--percentage), #e0f2fe 0);">
+            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center">
+              <span id="matchPercent" class="text-xl font-bold gradient-text"></span>
+            </div>
+          </div>
+        </div>
+        <p id="scoreInfo" class="text-primary-700 mb-4"></p>
+        <div class="bg-white p-4 rounded-lg">
+          <h3 class="font-semibold text-primary-700 mb-2">Matched Keywords:</h3>
+          <div id="keywordsMatched" class="flex flex-wrap gap-2 justify-center"></div>
+        </div>
+      </div>
     </div>
   </div>
 
- <script>
-  document.getElementById('resumeForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
+  <div class="mt-8 text-center text-primary-600">
+    <p>Get instant feedback on how to improve your resume for your target role</p>
+  </div>
 
-  const formData = new FormData(); // <- Fix: use formData
-  const resume = document.getElementById('resume').files[0];
-  const role = document.getElementById('jobRole').value;
+  <script>
+    document.getElementById('resumeForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-  if (!resume || !role) return alert("Please upload a resume and select a job role.");
+      const formData = new FormData();
+      const resume = document.getElementById('resume').files[0];
+      const role = document.getElementById('jobRole').value;
 
-  formData.append("resume", resume);
-  formData.append("job_role", role);
+      if (!resume || !role) {
+        alert("Please upload a resume and select a job role.");
+        return;
+      }
 
-  try {
-    const res = await fetch('https://resume-analyzer-backend-2-pwex.onrender.com/analyze', {
-      method: 'POST',
-      body: formData,
+      formData.append("resume", resume);
+      formData.append("job_role", role);
+
+      // Show loading state
+      const submitBtn = document.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="inline-block animate-spin mr-2">↻</span> Analyzing...';
+
+      try {
+        const res = await fetch('https://resume-analyzer-backend-2-pwex.onrender.com/analyze', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+
+        // Update UI with results
+        document.getElementById("result").classList.remove("hidden");
+        const percentage = data.match_percent;
+        document.getElementById("circularProgress").style.setProperty('--percentage', `${percentage}%`);
+        document.getElementById("matchPercent").textContent = `${percentage}%`;
+        document.getElementById("scoreInfo").textContent = `Match Score: ${data.score} out of ${data.total_keywords} keywords`;
+        
+        // Create keyword badges
+        const keywordsContainer = document.getElementById("keywordsMatched");
+        keywordsContainer.innerHTML = '';
+        data.keywords_matched.forEach(keyword => {
+          const badge = document.createElement('span');
+          badge.className = 'bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-sm';
+          badge.textContent = keyword;
+          keywordsContainer.appendChild(badge);
+        });
+
+      } catch (err) {
+        alert("Failed to connect to backend: " + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Analyze My Resume';
+      }
     });
 
-    const data = await res.json();
-
-    if (data.error) return alert(data.error);
-
-    document.getElementById("result").classList.remove("hidden");
-    document.getElementById("matchPercent").textContent = `Match: ${data.match_percent}% (${data.score} / ${data.total_keywords})`;
-    document.getElementById("keywordsMatched").textContent = `Matched Keywords: ${data.keywords_matched.join(", ")}`;
-  } catch (err) {
-    alert("Failed to connect to backend: " + err.message);
-  }
-});
-</script>
-
+    // Update file input label
+    document.getElementById('resume').addEventListener('change', function(e) {
+      const label = document.getElementById('file-label');
+      if (this.files.length > 0) {
+        label.textContent = this.files[0].name;
+        label.classList.add('text-primary-700');
+        label.classList.remove('text-primary-400');
+      } else {
+        label.textContent = 'Click to upload or drag and drop';
+        label.classList.add('text-primary-400');
+        label.classList.remove('text-primary-700');
+      }
+    });
+  </script>
 </body>
 </html>
