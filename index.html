@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Resume Analyzer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center px-4">
+  <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-xl">
+    <h1 class="text-2xl font-bold text-center mb-6 text-blue-600">AI Resume Analyzer</h1>
+    <form id="resumeForm" class="space-y-4">
+      <div>
+        <label class="block text-gray-700">Upload Resume (PDF):</label>
+        <input type="file" id="resume" accept=".pdf" required class="mt-1 p-2 w-full border rounded" />
+      </div>
+      <div>
+        <label class="block text-gray-700">Select Job Role:</label>
+        <select id="jobRole" required class="mt-1 p-2 w-full border rounded">
+          <option value="">-- Choose Role --</option>
+          <option>Data Analyst</option>
+          <option>Software Engineer</option>
+          <option>AI Engineer</option>
+          <option>Web Developer</option>
+          <option>Cloud Engineer</option>
+          <option>Backend Developer</option>
+          <option>Frontend Developer</option>
+          <option>DevOps Engineer</option>
+          <option>Database Admin</option>
+          <option>Cybersecurity Analyst</option>
+          <!-- Add more roles as needed -->
+        </select>
+      </div>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Analyze</button>
+    </form>
+
+    <div id="result" class="mt-6 text-center hidden">
+      <h2 class="text-xl font-semibold mb-2 text-green-600">Analysis Result</h2>
+      <p id="matchPercent" class="text-lg"></p>
+      <p id="keywordsMatched" class="text-sm text-gray-600 mt-2"></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('resumeForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const form = new FormData();
+      const resume = document.getElementById('resume').files[0];
+      const role = document.getElementById('jobRole').value;
+
+      if (!resume || !role) return alert("Please upload a resume and select a job role.");
+
+      form.append("resume", resume);
+      form.append("job_role", role);
+
+      const res = await fetch("http://127.0.0.1:5000/analyze", {
+        method: "POST",
+        body: form,
+      });
+
+      const data = await res.json();
+
+      if (data.error) return alert(data.error);
+
+      document.getElementById("result").classList.remove("hidden");
+      document.getElementById("matchPercent").textContent = `Match: ${data.match_percent}% (${data.score} / ${data.total_keywords})`;
+      document.getElementById("keywordsMatched").textContent = `Matched Keywords: ${data.keywords_matched.join(", ")}`;
+    });
+  </script>
+</body>
+</html>
