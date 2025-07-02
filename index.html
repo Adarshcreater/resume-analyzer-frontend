@@ -54,10 +54,10 @@
       form.append("resume", resume);
       form.append("job_role", role);
 
-      const res = await fetch("http://127.0.0.1:5000/analyze", {
-        method: "POST",
-        body: form,
-      });
+     fetch('https://resume-analyzer-backend.onrender.com/analyze', {
+  method: 'POST',
+  body: formData,
+});
 
       const data = await res.json();
 
