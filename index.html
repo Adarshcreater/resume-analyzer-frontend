@@ -43,35 +43,34 @@
 
  <script>
   document.getElementById('resumeForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const form = new FormData();
-    const resume = document.getElementById('resume').files[0];
-    const role = document.getElementById('jobRole').value;
+  const formData = new FormData(); // <- Fix: use formData
+  const resume = document.getElementById('resume').files[0];
+  const role = document.getElementById('jobRole').value;
 
-    if (!resume || !role) return alert("Please upload a resume and select a job role.");
+  if (!resume || !role) return alert("Please upload a resume and select a job role.");
 
-    form.append("resume", resume);
-    form.append("job_role", role);
+  formData.append("resume", resume);
+  formData.append("job_role", role);
 
-    try {
-      const res = await fetch('https://resume-analyzer-backend.onrender.com/analyze', {
-        method: 'POST',
-        body: form,
-      });
+  try {
+    const res = await fetch('https://resume-analyzer-backend-2-pwex.onrender.com/analyze', {
+      method: 'POST',
+      body: formData,
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (data.error) return alert(data.error);
+    if (data.error) return alert(data.error);
 
-      document.getElementById("result").classList.remove("hidden");
-      document.getElementById("matchPercent").textContent = `Match: ${data.match_percent}% (${data.score} / ${data.total_keywords})`;
-      document.getElementById("keywordsMatched").textContent = `Matched Keywords: ${data.keywords_matched.join(", ")}`;
-    } catch (error) {
-      alert("An error occurred while analyzing the resume.");
-      console.error(error);
-    }
-  });
+    document.getElementById("result").classList.remove("hidden");
+    document.getElementById("matchPercent").textContent = `Match: ${data.match_percent}% (${data.score} / ${data.total_keywords})`;
+    document.getElementById("keywordsMatched").textContent = `Matched Keywords: ${data.keywords_matched.join(", ")}`;
+  } catch (err) {
+    alert("Failed to connect to backend: " + err.message);
+  }
+});
 </script>
 
 </body>
