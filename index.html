@@ -41,23 +41,24 @@
     </div>
   </div>
 
-  <script>
-    document.getElementById('resumeForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
+ <script>
+  document.getElementById('resumeForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-      const form = new FormData();
-      const resume = document.getElementById('resume').files[0];
-      const role = document.getElementById('jobRole').value;
+    const form = new FormData();
+    const resume = document.getElementById('resume').files[0];
+    const role = document.getElementById('jobRole').value;
 
-      if (!resume || !role) return alert("Please upload a resume and select a job role.");
+    if (!resume || !role) return alert("Please upload a resume and select a job role.");
 
-      form.append("resume", resume);
-      form.append("job_role", role);
+    form.append("resume", resume);
+    form.append("job_role", role);
 
-     fetch('https://resume-analyzer-backend.onrender.com/analyze', {
-  method: 'POST',
-  body: formData,
-});
+    try {
+      const res = await fetch('https://resume-analyzer-backend.onrender.com/analyze', {
+        method: 'POST',
+        body: form,
+      });
 
       const data = await res.json();
 
@@ -66,7 +67,12 @@
       document.getElementById("result").classList.remove("hidden");
       document.getElementById("matchPercent").textContent = `Match: ${data.match_percent}% (${data.score} / ${data.total_keywords})`;
       document.getElementById("keywordsMatched").textContent = `Matched Keywords: ${data.keywords_matched.join(", ")}`;
-    });
-  </script>
+    } catch (error) {
+      alert("An error occurred while analyzing the resume.");
+      console.error(error);
+    }
+  });
+</script>
+
 </body>
 </html>
