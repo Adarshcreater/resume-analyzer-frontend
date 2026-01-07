@@ -5,135 +5,268 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Resume Analyzer</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            poppins: ['Poppins', 'sans-serif'],
-          },
-          colors: {
-            primary: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              200: '#bae6fd',
-              300: '#7dd3fc',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
-            },
-            gradient: {
-              start: '#4f46e5',
-              end: '#06b6d4',
-            }
-          },
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    .gradient-text {
-      background: linear-gradient(90deg, #4f46e5, #06b6d4);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    * {
+      font-family: 'Inter', sans-serif;
     }
+    
     .gradient-bg {
-      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e293b 100%);
     }
-    .file-input::file-selector-button {
-      background-color: #e0f2fe;
-      border: 1px solid #bae6fd;
-      border-radius: 0.25rem;
-      padding: 0.5rem 1rem;
-      margin-right: 1rem;
-      font-family: 'Poppins', sans-serif;
-      transition: all 0.2s;
+    
+    .glass-card {
+      background: rgba(30, 27, 75, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .file-input::file-selector-button:hover {
-      background-color: #bae6fd;
+    
+    .score-gradient {
+      background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
     }
-    .pulse-animation {
-      animation: pulse 2s infinite;
+    
+    .circular-progress {
+      transform: rotate(-90deg);
     }
+    
+    .upload-area {
+      border: 2px dashed rgba(139, 92, 246, 0.5);
+      transition: all 0.3s ease;
+    }
+    
+    .upload-area:hover {
+      border-color: rgba(139, 92, 246, 1);
+      background: rgba(139, 92, 246, 0.05);
+    }
+    
+    .pulse-ring {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
     @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-      70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-primary-50 to-primary-100 min-h-screen flex flex-col items-center justify-center px-4 font-poppins">
-  <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl border border-primary-100 transform transition-all hover:scale-[1.01]">
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold gradient-text mb-2">AI Resume Analyzer</h1>
-      <p class="text-primary-600">Upload your resume and discover how well it matches your dream job</p>
-    </div>
-    
-    <form id="resumeForm" class="space-y-6">
-      <div class="space-y-2">
-        <label class="block text-primary-700 font-medium">Upload Resume (PDF)</label>
-        <div class="relative">
-          <input type="file" id="resume" accept=".pdf" required 
-                 class="file-input mt-1 p-4 w-full border-2 border-dashed border-primary-200 rounded-xl hover:border-primary-300 transition-colors cursor-pointer" />
-          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span class="text-primary-400" id="file-label">Click to upload or drag and drop</span>
-          </div>
-        </div>
+<body class="gradient-bg min-h-screen text-white">
+  
+  <!-- Upload Section (Initial View) -->
+  <div id="uploadSection" class="min-h-screen flex items-center justify-center p-6">
+    <div class="glass-card rounded-3xl p-8 max-w-2xl w-full shadow-2xl">
+      <div class="text-center mb-8">
+        <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+          AI Resume Analyzer
+        </h1>
+        <p class="text-gray-300 text-lg">Upload your resume and discover how well it matches your dream job</p>
       </div>
       
-      <div class="space-y-2">
-        <label class="block text-primary-700 font-medium">Select Job Role</label>
-        <select id="jobRole" required 
-                class="mt-1 p-3 w-full border-2 border-primary-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
-          <option value="">-- Choose Your Dream Role --</option>
-          <option>Data Analyst</option>
-          <option>Software Engineer</option>
-          <option>AI Engineer</option>
-          <option>Web Developer</option>
-          <option>Cloud Engineer</option>
-          <option>Backend Developer</option>
-          <option>Frontend Developer</option>
-          <option>DevOps Engineer</option>
-          <option>Database Admin</option>
-          <option>Cybersecurity Analyst</option>
-        </select>
-      </div>
-      
-      <button type="submit" 
-              class="gradient-bg text-white px-6 py-3 rounded-xl hover:opacity-90 w-full font-semibold text-lg shadow-lg transform transition-all hover:scale-[1.02] pulse-animation">
-        Analyze My Resume
-      </button>
-    </form>
-
-    <div id="result" class="mt-8 p-6 rounded-xl bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200 hidden">
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-primary-800 mb-3">Analysis Result</h2>
-        <div class="inline-block bg-white rounded-full p-2 shadow-md mb-4">
-          <div id="circularProgress" class="w-24 h-24 rounded-full flex items-center justify-center" style="background: conic-gradient(#4f46e5 var(--percentage), #e0f2fe 0);">
-            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center">
-              <span id="matchPercent" class="text-xl font-bold gradient-text"></span>
+      <form id="resumeForm" class="space-y-6">
+        <div class="space-y-3">
+          <label class="block text-gray-200 font-medium text-sm">Upload Resume (PDF)</label>
+          <div class="upload-area rounded-xl p-8 text-center cursor-pointer relative">
+            <input type="file" id="resume" accept=".pdf" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+            <div class="pointer-events-none">
+              <svg class="w-12 h-12 mx-auto mb-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p class="text-gray-300" id="file-label">Click to upload or drag and drop</p>
+              <p class="text-gray-500 text-sm mt-1">PDF files only</p>
             </div>
           </div>
         </div>
-        <p id="scoreInfo" class="text-primary-700 mb-4"></p>
-        <div class="bg-white p-4 rounded-lg">
-          <h3 class="font-semibold text-primary-700 mb-2">Matched Keywords:</h3>
-          <div id="keywordsMatched" class="flex flex-wrap gap-2 justify-center"></div>
+        
+        <div class="space-y-3">
+          <label class="block text-gray-200 font-medium text-sm">Select Job Role</label>
+          <select id="jobRole" required 
+                  class="w-full p-4 rounded-xl bg-slate-800/50 border border-slate-700 text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all">
+            <option value="">-- Choose Your Dream Role --</option>
+            <option>Data Analyst</option>
+            <option>Software Engineer</option>
+            <option>AI Engineer</option>
+            <option>Web Developer</option>
+            <option>Cloud Engineer</option>
+            <option>Backend Developer</option>
+            <option>Frontend Developer</option>
+            <option>DevOps Engineer</option>
+            <option>Database Admin</option>
+            <option>Cybersecurity Analyst</option>
+          </select>
         </div>
+        
+        <button type="submit" 
+                class="w-full py-4 rounded-xl font-semibold text-lg shadow-lg transform transition-all hover:scale-[1.02] bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500">
+          Analyze My Resume
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard Section (Results View) -->
+  <div id="dashboardSection" class="hidden min-h-screen p-6">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold">AI Resume Analyzer</h1>
+        <div class="flex items-center gap-4">
+          <span class="text-gray-400" id="userName">Student@BKR49</span>
+          <button onclick="resetAnalyzer()" class="px-4 py-2 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-all">
+            New Analysis
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        
+        <!-- Left Column -->
+        <div class="lg:col-span-2 space-y-6">
+          
+          <!-- Overall Score Card -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+              
+              <!-- Main Score -->
+              <div class="md:col-span-1">
+                <h3 class="text-gray-400 text-sm mb-4">OVERALL SCORE</h3>
+                <div class="flex items-baseline">
+                  <span class="text-6xl font-bold" id="overallScore">82</span>
+                  <span class="text-2xl text-gray-400 ml-1">/100</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Spencer Examination</p>
+              </div>
+
+              <!-- Circular Metrics -->
+              <div class="md:col-span-3 grid grid-cols-3 gap-4">
+                
+                <!-- Experience -->
+                <div class="flex flex-col items-center">
+                  <svg class="w-24 h-24 circular-progress">
+                    <circle cx="48" cy="48" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none" />
+                    <circle id="expCircle" cx="48" cy="48" r="40" stroke="#8b5cf6" stroke-width="8" fill="none" 
+                            stroke-dasharray="251" stroke-dashoffset="63" stroke-linecap="round" />
+                    <text x="48" y="54" text-anchor="middle" class="text-2xl font-bold fill-white" id="expScore">85</text>
+                  </svg>
+                  <p class="text-sm text-gray-400 mt-2">EXPERIENCE</p>
+                </div>
+
+                <!-- Skills -->
+                <div class="flex flex-col items-center">
+                  <svg class="w-24 h-24 circular-progress">
+                    <circle cx="48" cy="48" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none" />
+                    <circle id="skillCircle" cx="48" cy="48" r="40" stroke="#f59e0b" stroke-width="8" fill="none" 
+                            stroke-dasharray="251" stroke-dashoffset="88" stroke-linecap="round" />
+                    <text x="48" y="54" text-anchor="middle" class="text-2xl font-bold fill-white" id="skillScore">79</text>
+                  </svg>
+                  <p class="text-sm text-gray-400 mt-2">SKILLS</p>
+                </div>
+
+                <!-- Education -->
+                <div class="flex flex-col items-center">
+                  <svg class="w-24 h-24 circular-progress">
+                    <circle cx="48" cy="48" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none" />
+                    <circle id="eduCircle" cx="48" cy="48" r="40" stroke="#10b981" stroke-width="8" fill="none" 
+                            stroke-dasharray="251" stroke-dashoffset="50" stroke-linecap="round" />
+                    <text x="48" y="54" text-anchor="middle" class="text-2xl font-bold fill-white" id="eduScore">80</text>
+                  </svg>
+                  <p class="text-sm text-gray-400 mt-2">EDUCATION</p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Essential Resume Insights -->
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">Essential Resume Insights</h3>
+            <div class="space-y-3" id="insights">
+              <div class="flex items-start gap-3">
+                <span class="text-purple-400">▶</span>
+                <div>
+                  <p class="font-medium">Seniority</p>
+                  <p class="text-sm text-gray-400">Mid-level position</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Powered Suggestions Progress -->
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">AI Powered Suggestions</h3>
+            <div class="relative">
+              <div class="h-3 rounded-full score-gradient"></div>
+              <div class="absolute top-0 left-0 h-3 bg-slate-800 rounded-full transition-all" id="suggestionProgress"></div>
+            </div>
+            <div class="flex justify-between mt-3 text-xs text-gray-400">
+              <span>Johnas-Doe-Substatement.pft</span>
+              <span>John-Doe-Substatement.pft</span>
+            </div>
+          </div>
+
+          <!-- Job Listings -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">Job Listings</h3>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-400">RECOMMEND PRIORITY</span>
+                <button class="p-1 hover:bg-slate-700/50 rounded">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="space-y-3" id="jobListings">
+              <!-- Jobs will be inserted here -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column - AI Suggestions -->
+        <div class="space-y-6">
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">AI Powered Suggestions</h3>
+            
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
+                <span class="text-xl">👤</span>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm text-gray-400">Welcome to 2.3.88.8.9.0g</p>
+                <div class="mt-2 bg-slate-800/50 rounded-lg px-3 py-2">
+                  <p class="text-xs text-gray-300" id="aiSuggestion">Studentexampleuser.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Matched Keywords -->
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-4">Matched Keywords</h3>
+            <div class="flex flex-wrap gap-2" id="keywordsMatched">
+              <!-- Keywords will be inserted here -->
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <div class="mt-8 text-center text-primary-600">
-    <p>Get instant feedback on how to improve your resume for your target role</p>
-  </div>
-
   <script>
+    let analysisData = null;
+
     document.getElementById('resumeForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
@@ -149,7 +282,6 @@
       formData.append("resume", resume);
       formData.append("job_role", role);
 
-      // Show loading state
       const submitBtn = document.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span class="inline-block animate-spin mr-2">↻</span> Analyzing...';
@@ -167,22 +299,8 @@
           return;
         }
 
-        // Update UI with results
-        document.getElementById("result").classList.remove("hidden");
-        const percentage = data.match_percent;
-        document.getElementById("circularProgress").style.setProperty('--percentage', `${percentage}%`);
-        document.getElementById("matchPercent").textContent = `${percentage}%`;
-        document.getElementById("scoreInfo").textContent = `Match Score: ${data.score} out of ${data.total_keywords} keywords`;
-        
-        // Create keyword badges
-        const keywordsContainer = document.getElementById("keywordsMatched");
-        keywordsContainer.innerHTML = '';
-        data.keywords_matched.forEach(keyword => {
-          const badge = document.createElement('span');
-          badge.className = 'bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-sm';
-          badge.textContent = keyword;
-          keywordsContainer.appendChild(badge);
-        });
+        analysisData = data;
+        showDashboard(data);
 
       } catch (err) {
         alert("Failed to connect to backend: " + err.message);
@@ -192,17 +310,140 @@
       }
     });
 
-    // Update file input label
+    function showDashboard(data) {
+      document.getElementById('uploadSection').classList.add('hidden');
+      document.getElementById('dashboardSection').classList.remove('hidden');
+      
+      // Calculate scores
+      const overall = Math.round(data.match_percent);
+      const experience = Math.min(100, Math.round(overall * 1.05));
+      const skills = Math.round(data.match_percent * 0.95);
+      const education = Math.min(100, Math.round(overall * 0.98));
+      
+      // Update overall score
+      document.getElementById('overallScore').textContent = overall;
+      
+      // Update circular progress
+      updateCircularProgress('expCircle', 'expScore', experience);
+      updateCircularProgress('skillCircle', 'skillScore', skills);
+      updateCircularProgress('eduCircle', 'eduScore', education);
+      
+      // Update insights
+      const insightsHtml = `
+        <div class="flex items-start gap-3">
+          <span class="text-purple-400">▶</span>
+          <div>
+            <p class="font-medium">Match Score</p>
+            <p class="text-sm text-gray-400">${data.score} out of ${data.total_keywords} keywords matched</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="text-cyan-400">▶</span>
+          <div>
+            <p class="font-medium">Job Role</p>
+            <p class="text-sm text-gray-400">${document.getElementById('jobRole').value}</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="text-emerald-400">▶</span>
+          <div>
+            <p class="font-medium">Overall Rating</p>
+            <p class="text-sm text-gray-400">${getScoreRating(overall)}</p>
+          </div>
+        </div>
+      `;
+      document.getElementById('insights').innerHTML = insightsHtml;
+      
+      // Update suggestion progress
+      document.getElementById('suggestionProgress').style.width = `${100 - overall}%`;
+      
+      // Update keywords
+      const keywordsContainer = document.getElementById('keywordsMatched');
+      keywordsContainer.innerHTML = '';
+      data.keywords_matched.forEach(keyword => {
+        const badge = document.createElement('span');
+        badge.className = 'bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm border border-purple-500/30';
+        badge.textContent = keyword;
+        keywordsContainer.appendChild(badge);
+      });
+      
+      // Generate job listings
+      generateJobListings(data);
+    }
+
+    function updateCircularProgress(circleId, textId, score) {
+      const circumference = 251;
+      const offset = circumference - (score / 100) * circumference;
+      document.getElementById(circleId).style.strokeDashoffset = offset;
+      document.getElementById(textId).textContent = score;
+    }
+
+    function getScoreRating(score) {
+      if (score >= 80) return 'Excellent match for the position';
+      if (score >= 60) return 'Good match with room for improvement';
+      if (score >= 40) return 'Moderate match, consider skill enhancement';
+      return 'Low match, significant improvements needed';
+    }
+
+    function generateJobListings(data) {
+      const listings = [
+        {
+          title: 'Build Your Professional Needles',
+          subtitle: 'Complete and optimize your professional profile',
+          priority: 'high',
+          match: 85
+        },
+        {
+          title: 'Your Need For Career Needles for Practice to Improve Needles',
+          subtitle: 'Enhance key skills for better job matching',
+          priority: 'medium',
+          match: 65
+        },
+        {
+          title: 'Expand Your Network',
+          subtitle: 'Connect with professionals in your field',
+          priority: 'high',
+          match: 78
+        }
+      ];
+
+      const listingsHtml = listings.map(job => `
+        <div class="flex items-center gap-4 p-4 bg-slate-800/30 rounded-xl hover:bg-slate-800/50 transition-all">
+          <div class="w-8 h-8 rounded-lg ${job.priority === 'high' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'} flex items-center justify-center">
+            ${job.priority === 'high' ? '✓' : '⚡'}
+          </div>
+          <div class="flex-1">
+            <h4 class="font-medium text-sm mb-1">${job.title}</h4>
+            <p class="text-xs text-gray-400">${job.subtitle}</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
+              <div class="h-full ${job.priority === 'high' ? 'bg-emerald-500' : 'bg-amber-500'}" style="width: ${job.match}%"></div>
+            </div>
+            <button class="w-8 h-8 rounded-lg ${job.priority === 'high' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'} flex items-center justify-center hover:scale-110 transition-transform">
+              ${job.priority === 'high' ? '✓' : '✕'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('jobListings').innerHTML = listingsHtml;
+    }
+
+    function resetAnalyzer() {
+      document.getElementById('dashboardSection').classList.add('hidden');
+      document.getElementById('uploadSection').classList.remove('hidden');
+      document.getElementById('resumeForm').reset();
+      document.getElementById('file-label').textContent = 'Click to upload or drag and drop';
+    }
+
+    // File input handler
     document.getElementById('resume').addEventListener('change', function(e) {
       const label = document.getElementById('file-label');
       if (this.files.length > 0) {
         label.textContent = this.files[0].name;
-        label.classList.add('text-primary-700');
-        label.classList.remove('text-primary-400');
       } else {
         label.textContent = 'Click to upload or drag and drop';
-        label.classList.add('text-primary-400');
-        label.classList.remove('text-primary-700');
       }
     });
   </script>
